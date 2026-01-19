@@ -4,10 +4,10 @@ import RSSParser from 'rss-parser';
 const parser = new RSSParser();
 
 const rssFeeds = [
-  { id: 'annahar', url: 'https://www.annahar.com/english/rss.xml', name: 'Annahar', color: 'bg-green-500' },
+  { id: 'annahar', url: 'https://www.annahar.com/rss', name: 'Annahar', color: 'bg-green-500' },
   { id: 'bbc', url: 'https://feeds.bbci.co.uk/news/rss.xml', name: 'BBC News', color: 'bg-red-500' },
   { id: 'cnn', url: 'http://rss.cnn.com/rss/edition.rss', name: 'CNN', color: 'bg-red-500' },
-  { id: 'reuters', url: 'https://www.reutersagency.com/feed/?best-topics=business-finance&post_type=best', name: 'Reuters', color: 'bg-orange-500' },
+  { id: 'reuters', url: 'https://www.reuters.com/tools/rss', name: 'Reuters', color: 'bg-orange-500' },
   { id: 'ft', url: 'https://www.ft.com/?format=rss', name: 'Financial Times', color: 'bg-pink-500' },
   { id: 'bloomberg', url: 'https://feeds.bloomberg.com/markets/news.rss', name: 'Bloomberg', color: 'bg-purple-500' },
   { id: 'time', url: 'https://feeds.feedburner.com/time/topstories', name: 'TIME', color: 'bg-red-500' },

@@ -27,6 +27,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!data || !('id' in data)) {
+      return NextResponse.json(
+        { error: 'Failed to create session' },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json({ sessionId: data.id });
   } catch (error) {
     console.error('Error in session creation:', error);

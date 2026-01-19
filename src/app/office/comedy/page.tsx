@@ -6,9 +6,9 @@ import Link from 'next/link';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 const comedians = [
-  { id: 'rodney', name: 'Rodney Dangerfield', color: 'bg-[#2E6B8A]' },
-  { id: 'george', name: 'George Carlin', color: 'bg-[#4A9B7A]' },
-  { id: 'don', name: 'Don Rickles', color: 'bg-[#C9A227]' },
+  { id: 'rodney', name: 'Rodney Dangerfield', bgColor: 'bg-[#E8F4F8]', textColor: 'text-[#2E6B8A]', borderColor: 'border-[#2E6B8A]' },
+  { id: 'george', name: 'George Carlin', bgColor: 'bg-[#F0F8F4]', textColor: 'text-[#4A9B7A]', borderColor: 'border-[#4A9B7A]' },
+  { id: 'don', name: 'Don Rickles', bgColor: 'bg-[#FFF8E8]', textColor: 'text-[#C9A227]', borderColor: 'border-[#C9A227]' },
 ];
 
 const topics = [
@@ -42,11 +42,22 @@ export default function ComedyClubPage() {
         }),
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch joke');
+      }
+
       const data = await response.json();
-      setJoke(data.joke);
-    } catch (error) {
+      if (data.joke) {
+        setJoke(data.joke);
+      } else if (data.error) {
+        setJoke(`Sorry, ${data.error}. Please try again.`);
+      } else {
+        setJoke('Sorry, I could not fetch a joke at this time.');
+      }
+    } catch (error: any) {
       console.error('Error fetching joke:', error);
-      setJoke('Sorry, I could not fetch a joke at this time.');
+      setJoke(`Sorry, ${error.message || 'I could not fetch a joke at this time.'} Please try again.`);
     } finally {
       setIsLoading(false);
     }
@@ -60,13 +71,16 @@ export default function ComedyClubPage() {
 
   return (
     <div className="min-h-screen bg-[#FAF7F2]">
-      {/* Header */}
-      <div className="bg-white elegant-shadow sticky top-0 z-10">
+      {/* Header - Theatrical Theme */}
+      <div className="bg-gradient-to-r from-[#E8F4F8] to-white elegant-shadow sticky top-0 z-10 border-b-2 border-[#C9A227]">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-4">
           <Link href="/office" className="text-[#2E6B8A] hover:text-[#C9A227] transition-colors">
             <ArrowLeftIcon className="w-6 h-6" />
           </Link>
-          <h1 className="text-2xl font-headline text-[#2D2D2D]">Comedy Club</h1>
+          <div className="flex-1">
+            <h1 className="text-2xl font-headline text-[#2D2D2D]">Comedy Club</h1>
+            <p className="text-xs text-[#2E6B8A] font-body">Where wit meets wisdom</p>
+          </div>
         </div>
       </div>
 
@@ -86,7 +100,7 @@ export default function ComedyClubPage() {
                 <motion.button
                   key={comedian.id}
                   onClick={() => setSelectedComedian(comedian.id)}
-                  className={`${comedian.color} text-white rounded-lg elegant-shadow p-8 hover:elegant-shadow-lg transition-all text-center`}
+                  className={`${comedian.bgColor} ${comedian.textColor} rounded-lg elegant-shadow p-8 hover:elegant-shadow-lg transition-all text-center border-2 ${comedian.borderColor}`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >

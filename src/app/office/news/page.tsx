@@ -54,14 +54,17 @@ export default function NewsFeedPage() {
 
   return (
     <div className="min-h-screen bg-[#FAF7F2]">
-      {/* Header */}
-      <div className="bg-white elegant-shadow sticky top-0 z-10">
+      {/* Header - Newsroom Theme */}
+      <div className="bg-gradient-to-r from-[#F0F8F4] to-white elegant-shadow sticky top-0 z-10 border-b-2 border-[#2E6B8A]">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center gap-4">
           <Link href="/office" className="text-[#2E6B8A] hover:text-[#C9A227] transition-colors">
             <ArrowLeftIcon className="w-6 h-6" />
           </Link>
           <NewspaperIcon className="w-6 h-6 text-[#2E6B8A]" />
-          <h1 className="text-2xl font-headline text-[#2D2D2D]">News Feed</h1>
+          <div className="flex-1">
+            <h1 className="text-2xl font-headline text-[#2D2D2D]">News Feed</h1>
+            <p className="text-xs text-[#2E6B8A] font-body">Curated intelligence from trusted sources</p>
+          </div>
         </div>
       </div>
 

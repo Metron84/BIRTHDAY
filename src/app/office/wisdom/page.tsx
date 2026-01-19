@@ -36,13 +36,16 @@ export default function BusinessWisdomPage() {
 
   return (
     <div className="min-h-screen bg-[#FAF7F2]">
-      {/* Header */}
-      <div className="bg-white elegant-shadow sticky top-0 z-10">
+      {/* Header - Library/Study Theme */}
+      <div className="bg-gradient-to-r from-[#FFF8E8] to-white elegant-shadow sticky top-0 z-10 border-b-2 border-[#C9A227]">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-4">
           <Link href="/office" className="text-[#2E6B8A] hover:text-[#C9A227] transition-colors">
             <ArrowLeftIcon className="w-6 h-6" />
           </Link>
-          <h1 className="text-2xl font-headline text-[#2D2D2D]">Business Wisdom</h1>
+          <div className="flex-1">
+            <h1 className="text-2xl font-headline text-[#2D2D2D]">Business Wisdom</h1>
+            <p className="text-xs text-[#2E6B8A] font-body">Timeless insights from the masters</p>
+          </div>
         </div>
       </div>
 

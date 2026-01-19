@@ -104,6 +104,24 @@ export default function TheOfficePage() {
             {greeting}, {selectedName}
           </h2>
           <p className="text-lg text-[#2D2D2D] font-body">Welcome to your sanctuary</p>
+          
+          {/* Start Session Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.3, duration: 0.6 }}
+            className="mt-6"
+          >
+            <button
+              onClick={() => {
+                const firstPersona = gentlemen[0];
+                window.location.href = `/office/chat/${firstPersona.id}`;
+              }}
+              className="px-8 py-4 bg-[#C9A227] text-white rounded-lg elegant-shadow-lg hover:elegant-shadow-xl transition-all text-lg font-headline"
+            >
+              Start Session
+            </button>
+          </motion.div>
         </motion.div>
 
         {/* The Salon Grid */}
@@ -127,6 +145,14 @@ export default function TheOfficePage() {
                           alt={persona.name}
                           fill
                           className="object-cover persona-image group-hover:scale-105 transition-transform"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            const fallback = document.createElement('div');
+                            fallback.className = 'w-full h-full bg-[#E8F4F8] flex items-center justify-center';
+                            fallback.innerHTML = `<span class="text-[#2E6B8A] font-headline text-2xl">${persona.name.charAt(0)}</span>`;
+                            target.parentElement?.appendChild(fallback);
+                          }}
                         />
                       </div>
                       <h4 className="font-headline text-[#2D2D2D] text-center text-sm mb-1">{persona.name}</h4>
@@ -157,6 +183,14 @@ export default function TheOfficePage() {
                           alt={persona.name}
                           fill
                           className="object-cover persona-image group-hover:scale-105 transition-transform"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            const fallback = document.createElement('div');
+                            fallback.className = 'w-full h-full bg-[#E8F4F8] flex items-center justify-center';
+                            fallback.innerHTML = `<span class="text-[#2E6B8A] font-headline text-2xl">${persona.name.charAt(0)}</span>`;
+                            target.parentElement?.appendChild(fallback);
+                          }}
                         />
                       </div>
                       <h4 className="font-headline text-[#2D2D2D] text-center text-sm mb-1">{persona.name}</h4>

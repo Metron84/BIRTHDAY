@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     // Save user message to database
     await supabase.from('messages').insert({
       session_id: sessionId,
-      role: 'user',
+      role: 'user' as 'user' | 'assistant',
       content: message,
     });
 
@@ -51,8 +51,8 @@ export async function POST(request: NextRequest) {
       .limit(20);
 
     // Build conversation context
-    const conversationHistory = history?.map((msg) => ({
-      role: msg.role === 'user' ? 'user' : 'assistant',
+    const conversationHistory = history?.map((msg: { role: 'user' | 'assistant'; content: string }) => ({
+      role: msg.role === 'user' ? 'user' as const : 'assistant' as const,
       content: msg.content,
     })) || [];
 
@@ -69,15 +69,15 @@ export async function POST(request: NextRequest) {
             system: systemPrompt,
             messages: [
               ...conversationHistory,
-              { role: 'user', content: message },
+              { role: 'user' as const, content: message },
             ],
             stream: true,
           });
 
           let fullResponse = '';
           for await (const chunk of messageStream) {
-            if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text') {
-              const text = chunk.delta.text;
+            if (chunk.type === 'content_block_delta' && 'delta' in chunk && chunk.delta && typeof chunk.delta === 'object' && 'type' in chunk.delta && chunk.delta.type === 'text' && 'text' in chunk.delta) {
+              const text = chunk.delta.text as string;
               fullResponse += text;
               controller.enqueue(
                 new TextEncoder().encode(`data: ${JSON.stringify({ content: text })}\n\n`)
@@ -89,15 +89,20 @@ export async function POST(request: NextRequest) {
           if (fullResponse) {
             await supabase.from('messages').insert({
               session_id: sessionId,
-              role: 'assistant',
+              role: 'assistant' as 'user' | 'assistant',
               content: fullResponse,
             });
           }
 
           controller.enqueue(new TextEncoder().encode('data: [DONE]\n\n'));
           controller.close();
-        } catch (error) {
+        } catch (error: any) {
           console.error('Error in Claude stream:', error);
+          console.error('Error details:', {
+            message: error?.message,
+            status: error?.status,
+            error: error?.error,
+          });
           controller.error(error);
         }
       },

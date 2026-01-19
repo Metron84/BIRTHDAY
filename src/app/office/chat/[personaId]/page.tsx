@@ -42,6 +42,7 @@ export default function ChatPage() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [imageError, setImageError] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -178,12 +179,19 @@ export default function ChatPage() {
             <ArrowLeftIcon className="w-6 h-6" />
           </Link>
           <div className="relative w-12 h-12 rounded-full overflow-hidden">
-            <Image
-              src={persona.imageUrl}
-              alt={persona.name}
-              fill
-              className="object-cover persona-image"
-            />
+            {!imageError ? (
+              <Image
+                src={persona.imageUrl}
+                alt={persona.name}
+                fill
+                className="object-cover persona-image"
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <div className="w-full h-full bg-[#E8F4F8] flex items-center justify-center">
+                <span className="text-[#2E6B8A] font-headline text-lg">{persona.name.charAt(0)}</span>
+              </div>
+            )}
           </div>
           <div className="flex-1">
             <h1 className="font-headline text-[#2D2D2D] text-lg">{persona.name}</h1>
@@ -215,12 +223,19 @@ export default function ChatPage() {
               >
                 {message.role === 'assistant' && (
                   <div className="relative w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                    <Image
-                      src={persona.imageUrl}
-                      alt={persona.name}
-                      fill
-                      className="object-cover persona-image"
-                    />
+                    {!imageError ? (
+                      <Image
+                        src={persona.imageUrl}
+                        alt={persona.name}
+                        fill
+                        className="object-cover persona-image"
+                        onError={() => setImageError(true)}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-[#E8F4F8] flex items-center justify-center">
+                        <span className="text-[#2E6B8A] font-headline text-sm">{persona.name.charAt(0)}</span>
+                      </div>
+                    )}
                   </div>
                 )}
                 <div

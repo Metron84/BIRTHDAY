@@ -40,12 +40,12 @@ export async function POST(request: NextRequest) {
     const { data: existingJoke } = await supabase
       .from('jokes')
       .select('content')
-      .eq('comedian', comedian)
-      .eq('category', category)
+      .eq('comedian', comedian as 'rodney' | 'george' | 'don')
+      .eq('category', category as 'marriage' | 'aging' | 'money' | 'family' | 'no_respect' | 'truth' | 'roast' | 'wajed')
       .limit(1)
       .single();
 
-    if (existingJoke) {
+    if (existingJoke && 'content' in existingJoke) {
       return NextResponse.json({ joke: existingJoke.content });
     }
 
@@ -55,23 +55,41 @@ export async function POST(request: NextRequest) {
       ? 'Tell me a roast joke about Wajed, Ahmad\'s son. Keep it playful and family-friendly.'
       : `Tell me a joke about ${category}. Keep it clean and funny.`;
 
-    const message = await claudeClient.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 500,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: userPrompt }],
-    });
+    try {
+      const message = await claudeClient.messages.create({
+        model: 'claude-3-5-sonnet-20241022',
+        max_tokens: 500,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }],
+      });
 
-    const jokeContent = message.content[0].type === 'text' ? message.content[0].text : '';
+      const jokeContent = message.content[0].type === 'text' ? message.content[0].text : '';
 
-    // Save to database
-    await supabase.from('jokes').insert({
-      comedian,
-      category,
-      content: jokeContent,
-    });
+      if (!jokeContent || jokeContent.trim().length === 0) {
+        throw new Error('Empty joke content from Claude API');
+      }
 
-    return NextResponse.json({ joke: jokeContent });
+      // Save to database
+      const { error: insertError } = await supabase.from('jokes').insert({
+        comedian: comedian as 'rodney' | 'george' | 'don',
+        category: category as 'marriage' | 'aging' | 'money' | 'family' | 'no_respect' | 'truth' | 'roast' | 'wajed',
+        content: jokeContent,
+      });
+
+      if (insertError) {
+        console.error('Error saving joke to database:', insertError);
+        // Still return the joke even if DB save fails
+      }
+
+      return NextResponse.json({ joke: jokeContent });
+    } catch (apiError: any) {
+      console.error('Claude API error:', apiError);
+      const errorMessage = apiError?.message || 'Failed to generate joke';
+      return NextResponse.json(
+        { error: errorMessage, joke: null },
+        { status: 500 }
+      );
+    }
   } catch (error) {
     console.error('Error generating joke:', error);
     return NextResponse.json(
