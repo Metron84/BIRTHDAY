@@ -1,58 +1,31 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { quotes } from '@/lib/constants/quotes';
 
 export async function GET() {
   try {
-    // Get quote of the day (random from database)
-    const { data: allQuotes } = await supabase
-      .from('quotes')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(100);
-
-    if (!allQuotes || allQuotes.length === 0) {
-      // Return default quotes if database is empty
-      const defaultQuotes = [
-        {
-          id: '1',
-          author: 'Warren Buffett',
-          content: 'Price is what you pay. Value is what you get.',
-          category: 'business',
-        },
-        {
-          id: '2',
-          author: 'Don Corleone',
-          content: 'A man who doesn\'t spend time with his family can never be a real man.',
-          category: 'family',
-        },
-        {
-          id: '3',
-          author: 'Peter Drucker',
-          content: 'The best way to predict the future is to create it.',
-          category: 'business',
-        },
-        {
-          id: '4',
-          author: 'Michael Corleone',
-          content: 'Keep your friends close, but your enemies closer.',
-          category: 'strategy',
-        },
-      ];
-
-      const randomQuote = defaultQuotes[Math.floor(Math.random() * defaultQuotes.length)];
-      return NextResponse.json({
-        quoteOfTheDay: randomQuote,
-        allQuotes: defaultQuotes,
-      });
-    }
-
-    // Select random quote for quote of the day
-    const randomIndex = Math.floor(Math.random() * allQuotes.length);
-    const quoteOfTheDay = allQuotes[randomIndex];
-
+    // Get today's date and use it to select a consistent quote
+    const today = new Date();
+    const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
+    
+    // Select quote based on day of year for consistency
+    const quoteIndex = dayOfYear % quotes.length;
+    const quoteOfTheDay = quotes[quoteIndex];
+    
     return NextResponse.json({
-      quoteOfTheDay,
-      allQuotes: allQuotes.slice(0, 50), // Limit archive to 50 most recent
+      quoteOfTheDay: {
+        id: quoteOfTheDay.id,
+        author: quoteOfTheDay.author,
+        content: quoteOfTheDay.text,
+        category: quoteOfTheDay.category
+      },
+      allQuotes: quotes.map(q => ({
+        id: q.id,
+        author: q.author,
+        content: q.text,
+        category: q.category
+      })),
+      date: today.toISOString().split('T')[0],
+      totalQuotes: quotes.length
     });
   } catch (error) {
     console.error('Error fetching quotes:', error);
