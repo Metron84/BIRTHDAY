@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { thauraClient } from '@/lib/thauraClient';
+import { claudeClient } from '@/lib/claudeClient';
 import { supabase } from '@/lib/supabase';
 import { getPersonaPrompt } from '@/lib/personas/prompts';
 
@@ -38,12 +38,12 @@ export async function POST(request: NextRequest) {
     // Get system prompt from our prompts file
     const systemPrompt = getPersonaPrompt(personaId);
 
-    // Create streaming response using Thaura (Anthropic-compatible)
+    // Create streaming response using Claude
     const stream = new ReadableStream({
       async start(controller) {
         try {
-          const messageStream = await thauraClient.messages.create({
-            model: 'claude-3-5-sonnet-20241022', // Or use Thaura's model name
+          const messageStream = await claudeClient.messages.create({
+            model: 'claude-3-5-sonnet-20241022',
             max_tokens: 1024,
             system: systemPrompt,
             messages: [
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
           controller.enqueue(new TextEncoder().encode('data: [DONE]\n\n'));
           controller.close();
         } catch (error: any) {
-          console.error('Error in Thaura stream:', error);
+          console.error('Error in Claude stream:', error);
           console.error('Error details:', {
             message: error?.message,
             status: error?.status,
